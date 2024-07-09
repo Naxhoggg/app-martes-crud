@@ -5,84 +5,91 @@ import { Row,Col,Container,Card } from 'react-bootstrap'
 import './App.css'
 
 function App() {
-  const [students, setStudents] = useState([])
-  const [age,setAge]=useState('')
-  const [name,setName]=useState('')
-  const [editIndex, setEditIndex]=useState(null)
+  const [recordatorios, setRecordatorios] = useState([])
+  const [descripcion, setDescripcion] = useState('')
+  const [fecha, setFecha] = useState('')
+  const [importante, setImportante] = useState(false);
+  const [editIndex, setEditIndex] = useState(null)
 
-  const handleSubmit=(event)=>{
+  const handleSubmit = (event) => {
     event.preventDefault()
-    if(editIndex!==null){
-      const newStudents=[...students]
-      newStudents[editIndex]={name, age}
-      setStudents(newStudents)
+    if (editIndex !== null) {
+      const newRecordatorio = [...recordatorios]
+      newRecordatorio[editIndex] = { descripcion, fecha, importante }
+      setRecordatorios(newRecordatorio)
       setEditIndex(null)
-    }else{
-      setStudents([...students,{name,age}])
+    } else {
+      setRecordatorios([...recordatorios, { descripcion, fecha, importante }])
     }
-    
-    setName('')
-    setAge('')
+    setDescripcion('')
+    setFecha('')
+    setImportante(false);
   }
 
-  const handleDelete=(index)=>{
-     const newStudent=[...students]
-     newStudent.splice(index,1)
-     setStudents(newStudent)
+  const handleDelete = (index) => {
+    const newRecordatorio = [...recordatorios]
+    newRecordatorio.splice(index, 1)
+    setRecordatorios(newRecordatorio)
   }
 
-  const handleEdit=(index)=>{
-    setName(students[index].name)
-    setAge(students[index].age)
+  const handEdit = (index) => {
+    setDescripcion(recordatorios[index].descripcion)
+    setFecha(recordatorios[index].fecha)
+    setImportante(recordatorios[index].importante);
     setEditIndex(index)
-
   }
-
 
   return (
-    <Container>
+    <>
+      <Container style={{border: '2px solid black', padding:'10px', borderRadius: '5px', background:'rgb(95,216,210)'}} className="form-container">
+        <Row>
+          <Form onSubmit={handleSubmit} className="form-wrapper">
+            <h1 style={{color: 'red'}}>Recordatorios</h1>
+            <Form.Group className="mb-3">
+              <Form.Label>Descripción :</Form.Label>
+              <Form.Control placeholder="Ingrese lo que desea recordar" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} required/>
+            </Form.Group>
 
-    
-    <Row>
-    <Form onSubmit={handleSubmit}>
-   
-   <Form.Group className="mb-3">
-     <Form.Label >Nombre :</Form.Label>
-     <Form.Control  placeholder="Ingrese Nombre Alumno" value={name} onChange={(e)=>setName(e.target.value)}/>
-   </Form.Group>
-   <Form.Group className="mb-3">
-     <Form.Label >Edad :</Form.Label>
-     <Form.Control  placeholder="Ingrese Edad Alumno" value={age} onChange={(e)=>setAge(e.target.value)}/>
-   </Form.Group>
-  
-   <Button type="submit">
-    {
-      editIndex!==null ?'Actualizar Datos':'Agregar datos'
-    }
-      </Button>
-
- </Form>
-    
-    </Row>
-     <Row>
-      {
-        students.map((student,index)=>(
-     <Col sm={6} key={index}>
-     <Card style={{ width: '18rem' }}>
-      <Card.Body>
-        <Card.Title>Datos Alumno</Card.Title>
-        <Card.Text>{student.name} </Card.Text>
-        <Card.Text>Edad:{student.age} </Card.Text>
-        <Button variant="danger" onClick={()=>handleDelete(index)}>Eliminar</Button>
-        <Button variant="warning" onClick={()=>handleEdit(index)}>Modificar</Button>
-      </Card.Body>
-    </Card>
-    </Col> 
-        ))
-      }
-     </Row>
-    </Container>
+            <Form.Group className="mb-3">
+              <Form.Label>Fecha: </Form.Label>
+              <Form.Control type='date' value={fecha} onChange={(e) => setFecha(e.target.value)} required/>
+            </Form.Group>
+            <Form.Check className="mb-3"
+              type="switch"
+              id="custom-switch"
+              label="Importante"
+              checked={importante}
+              onChange={() => setImportante(!importante)} />
+            <Button variant="primary" type="submit">
+              {editIndex != null ? 'Actualizar recordatorio' : 'Agregar recordatorio'}
+            </Button>
+          </Form>
+        </Row>
+      </Container>
+      <br></br>
+      <Container>
+        <Row>
+          {recordatorios.map((recordatorio, index) => (
+            <Col sm={6} key={index}>
+              <Card style={{ width: '18rem', background:'rgb(95,216,210)' }}>
+                <Card.Body>
+                  <Card.Text>Fecha: {recordatorio.fecha}{' '}
+                    {recordatorio.importante && (
+                      <p style={{color: 'red', fontSize: '30px'}}>&#x2713;</p>
+                    )}
+                  </Card.Text>
+                  <Card.Text id="texto-recordatorio">{recordatorio.descripcion}</Card.Text>
+                  <Button variant="danger" onClick={() => handleDelete(index)}>Eliminar</Button>
+                  <Button variant="primary" onClick={() => handEdit(index)}>Modificar</Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </Container>
+    </>
   )
 }
+
 
 export default App
